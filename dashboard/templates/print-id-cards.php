@@ -24,7 +24,7 @@
             border-radius: 12px; padding: 0; position: relative; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
             overflow: hidden; display: flex; flex-direction: column;
         }
-        .header { background: var(--workedia-primary-color, #0073aa); color: white; padding: 8px 12px; text-align: center; font-weight: 800; font-size: 0.85em; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .header { background: var(--dashboard-primary-color, #0073aa); color: white; padding: 8px 12px; text-align: center; font-weight: 800; font-size: 0.85em; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .content { display: flex; flex: 1; padding: 12px; align-items: center; gap: 12px; }
         .photo-box img { width: 55px; height: 55px; border-radius: 8px; object-fit: cover; border: 2px solid #f1f5f9; }
         .info { flex: 1; min-width: 0; }
@@ -37,7 +37,7 @@
             .no-print { display: none !important; }
             .id-card { box-shadow: none; break-inside: avoid; border: 1px solid #ddd; }
         }
-        <?php $print_settings = get_option('workedia_print_settings'); echo $print_settings['custom_css'] ?? ''; ?>
+        <?php $print_settings = get_option('dashboard_print_settings'); echo $print_settings['custom_css'] ?? ''; ?>
     </style>
 </head>
 <body>
@@ -45,17 +45,17 @@
         <button onclick="window.print()" style="padding: 10px 20px; background: #27ae60; color: white; border: none; cursor: pointer; border-radius: 5px;">بدء الطباعة</button>
     </div>
     <?php
-    $workedia = Workedia_Settings::get_workedia_info();
+    $dashboard = Dashboard_Settings::get_dashboard_info();
     $chunks = array_chunk($members, 6);
     foreach ($chunks as $page_members): ?>
     <div class="cards-container">
         <?php foreach ($page_members as $s): ?>
-        <div class="id-card" style="--workedia-primary-color: <?php echo Workedia_Settings::get_appearance()['primary_color']; ?>;">
+        <div class="id-card" style="--dashboard-primary-color: <?php echo Dashboard_Settings::get_appearance()['primary_color']; ?>;">
             <div class="header">
-                <?php if ($workedia['workedia_logo']): ?>
-                    <img src="<?php echo esc_url($workedia['workedia_logo']); ?>" style="height: 18px; filter: brightness(0) invert(1);">
+                <?php if ($dashboard['dashboard_logo']): ?>
+                    <img src="<?php echo esc_url($dashboard['dashboard_logo']); ?>" style="height: 18px; filter: brightness(0) invert(1);">
                 <?php endif; ?>
-                <span><?php echo esc_html($workedia['workedia_name']); ?></span>
+                <span><?php echo esc_html($dashboard['dashboard_name']); ?></span>
             </div>
             <div class="content">
                 <div class="photo-box">
@@ -74,7 +74,7 @@
                 </div>
             </div>
             <div class="footer">
-                مسؤول Workedia: <?php echo esc_html($workedia['workedia_officer_name'] ?? ''); ?> | <?php echo esc_html($workedia['phone']); ?>
+                مسؤول Dashboard: <?php echo esc_html($dashboard['dashboard_officer_name'] ?? ''); ?> | <?php echo esc_html($dashboard['phone']); ?>
             </div>
         </div>
         <?php endforeach; ?>

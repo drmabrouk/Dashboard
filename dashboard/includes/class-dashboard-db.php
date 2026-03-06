@@ -1,7 +1,7 @@
 <?php
 
-if ( ! class_exists( 'Workedia_DB' ) ) {
-class Workedia_DB {
+if ( ! class_exists( 'Dashboard_DB' ) ) {
+class Dashboard_DB {
 
     public static function get_staff($args = array()) {
         $default_args = array(
@@ -16,7 +16,7 @@ class Workedia_DB {
 
     public static function get_members($args = array()) {
         global $wpdb;
-        $table_name = $wpdb->prefix . 'workedia_members';
+        $table_name = $wpdb->prefix . 'dashboard_members';
         $query = "SELECT *, CONCAT(first_name, ' ', last_name) as name FROM $table_name WHERE 1=1";
         $params = array();
 
@@ -55,29 +55,29 @@ class Workedia_DB {
 
     public static function get_member_by_id($id) {
         global $wpdb;
-        return $wpdb->get_row($wpdb->prepare("SELECT *, CONCAT(first_name, ' ', last_name) as name FROM {$wpdb->prefix}workedia_members WHERE id = %d", $id));
+        return $wpdb->get_row($wpdb->prepare("SELECT *, CONCAT(first_name, ' ', last_name) as name FROM {$wpdb->prefix}dashboard_members WHERE id = %d", $id));
     }
 
     public static function get_member_by_member_username($username) {
         global $wpdb;
-        return $wpdb->get_row($wpdb->prepare("SELECT *, CONCAT(first_name, ' ', last_name) as name FROM {$wpdb->prefix}workedia_members WHERE username = %s", $username));
+        return $wpdb->get_row($wpdb->prepare("SELECT *, CONCAT(first_name, ' ', last_name) as name FROM {$wpdb->prefix}dashboard_members WHERE username = %s", $username));
     }
 
     public static function get_member_by_membership_number($membership_number) {
         global $wpdb;
-        return $wpdb->get_row($wpdb->prepare("SELECT *, CONCAT(first_name, ' ', last_name) as name FROM {$wpdb->prefix}workedia_members WHERE membership_number = %s", $membership_number));
+        return $wpdb->get_row($wpdb->prepare("SELECT *, CONCAT(first_name, ' ', last_name) as name FROM {$wpdb->prefix}dashboard_members WHERE membership_number = %s", $membership_number));
     }
 
     public static function get_member_by_username($username) {
         $user = get_user_by('login', $username);
         if (!$user) return null;
         global $wpdb;
-        return $wpdb->get_row($wpdb->prepare("SELECT *, CONCAT(first_name, ' ', last_name) as name FROM {$wpdb->prefix}workedia_members WHERE wp_user_id = %d", $user->ID));
+        return $wpdb->get_row($wpdb->prepare("SELECT *, CONCAT(first_name, ' ', last_name) as name FROM {$wpdb->prefix}dashboard_members WHERE wp_user_id = %d", $user->ID));
     }
 
     public static function add_member($data) {
         global $wpdb;
-        $table_name = $wpdb->prefix . 'workedia_members';
+        $table_name = $wpdb->prefix . 'dashboard_members';
 
         $username = sanitize_text_field($data['username'] ?? '');
         if (empty($username)) {
@@ -117,7 +117,7 @@ class Workedia_DB {
 
         if (!is_wp_error($wp_user_id)) {
             $wp_user_id = $wp_user_id;
-            update_user_meta($wp_user_id, 'workedia_temp_pass', $temp_pass);
+            update_user_meta($wp_user_id, 'dashboard_temp_pass', $temp_pass);
             update_user_meta($wp_user_id, 'first_name', $first_name);
             update_user_meta($wp_user_id, 'last_name', $last_name);
         } else {
@@ -149,7 +149,7 @@ class Workedia_DB {
         $id = $wpdb->insert_id;
 
         if ($id) {
-            Workedia_Logger::log('إضافة عضو جديد', "تمت إضافة العضو: $full_name بنجاح (اسم المستخدم: $username)");
+            Dashboard_Logger::log('إضافة عضو جديد', "تمت إضافة العضو: $full_name بنجاح (اسم المستخدم: $username)");
         }
 
         return $id;
@@ -157,7 +157,7 @@ class Workedia_DB {
 
     public static function add_member_record($data) {
         global $wpdb;
-        $table_name = $wpdb->prefix . 'workedia_members';
+        $table_name = $wpdb->prefix . 'dashboard_members';
 
         $insert_data = array(
             'username' => sanitize_text_field($data['username']),
@@ -178,7 +178,7 @@ class Workedia_DB {
 
     public static function update_member($id, $data) {
         global $wpdb;
-        $table_name = $wpdb->prefix . 'workedia_members';
+        $table_name = $wpdb->prefix . 'dashboard_members';
 
         $update_data = array();
         $fields = [
@@ -228,7 +228,7 @@ class Workedia_DB {
 
     public static function update_member_photo($id, $photo_url) {
         global $wpdb;
-        return $wpdb->update($wpdb->prefix . 'workedia_members', array('photo_url' => $photo_url), array('id' => $id));
+        return $wpdb->update($wpdb->prefix . 'dashboard_members', array('photo_url' => $photo_url), array('id' => $id));
     }
 
     public static function delete_member($id) {
@@ -236,7 +236,7 @@ class Workedia_DB {
 
         $member = self::get_member_by_id($id);
         if ($member) {
-            Workedia_Logger::log('حذف عضو (مع إمكانية الاستعادة)', 'ROLLBACK_DATA:' . json_encode(['table' => 'members', 'data' => (array)$member]));
+            Dashboard_Logger::log('حذف عضو (مع إمكانية الاستعادة)', 'ROLLBACK_DATA:' . json_encode(['table' => 'members', 'data' => (array)$member]));
             if ($member->wp_user_id) {
                 if (!function_exists('wp_delete_user')) {
                     require_once(ABSPATH . 'wp-admin/includes/user.php');
@@ -245,26 +245,26 @@ class Workedia_DB {
             }
         }
 
-        return $wpdb->delete($wpdb->prefix . 'workedia_members', array('id' => $id));
+        return $wpdb->delete($wpdb->prefix . 'dashboard_members', array('id' => $id));
     }
 
     public static function member_exists($username) {
         global $wpdb;
         return $wpdb->get_var($wpdb->prepare(
-            "SELECT id FROM {$wpdb->prefix}workedia_members WHERE username = %s",
+            "SELECT id FROM {$wpdb->prefix}dashboard_members WHERE username = %s",
             $username
         ));
     }
 
     public static function get_next_sort_order() {
         global $wpdb;
-        $max = $wpdb->get_var("SELECT MAX(sort_order) FROM {$wpdb->prefix}workedia_members");
+        $max = $wpdb->get_var("SELECT MAX(sort_order) FROM {$wpdb->prefix}dashboard_members");
         return ($max ? intval($max) : 0) + 1;
     }
 
     public static function send_message($sender_id, $receiver_id, $message, $member_id = null, $file_url = null) {
         global $wpdb;
-        return $wpdb->insert($wpdb->prefix . 'workedia_messages', array(
+        return $wpdb->insert($wpdb->prefix . 'dashboard_messages', array(
             'sender_id' => $sender_id,
             'receiver_id' => $receiver_id,
             'member_id' => $member_id,
@@ -278,7 +278,7 @@ class Workedia_DB {
         global $wpdb;
         return $wpdb->get_results($wpdb->prepare(
             "SELECT m.*, u.display_name as sender_name
-             FROM {$wpdb->prefix}workedia_messages m
+             FROM {$wpdb->prefix}dashboard_messages m
              LEFT JOIN {$wpdb->prefix}users u ON m.sender_id = u.ID
              WHERE m.member_id = %d
              ORDER BY m.created_at ASC",
@@ -290,7 +290,7 @@ class Workedia_DB {
         global $wpdb;
         return $wpdb->get_results($wpdb->prepare(
             "SELECT m.*, u.display_name as sender_name
-             FROM {$wpdb->prefix}workedia_messages m
+             FROM {$wpdb->prefix}dashboard_messages m
              JOIN {$wpdb->prefix}users u ON m.sender_id = u.ID
              WHERE (sender_id = %d AND receiver_id = %d)
                 OR (sender_id = %d AND receiver_id = %d)
@@ -303,7 +303,7 @@ class Workedia_DB {
         global $wpdb;
         return $wpdb->get_results($wpdb->prepare(
             "SELECT m.*, u.display_name as receiver_name
-             FROM {$wpdb->prefix}workedia_messages m
+             FROM {$wpdb->prefix}dashboard_messages m
              JOIN {$wpdb->prefix}users u ON m.receiver_id = u.ID
              WHERE m.sender_id = %d
              ORDER BY m.created_at DESC",
@@ -313,14 +313,14 @@ class Workedia_DB {
 
     public static function delete_expired_messages() {
         global $wpdb;
-        return $wpdb->query("DELETE FROM {$wpdb->prefix}workedia_messages WHERE created_at < DATE_SUB(NOW(), INTERVAL 1 YEAR)");
+        return $wpdb->query("DELETE FROM {$wpdb->prefix}dashboard_messages WHERE created_at < DATE_SUB(NOW(), INTERVAL 1 YEAR)");
     }
 
     public static function get_conversations($user_id) {
         global $wpdb;
         $other_ids = $wpdb->get_col($wpdb->prepare(
             "SELECT DISTINCT CASE WHEN sender_id = %d THEN receiver_id ELSE sender_id END
-             FROM {$wpdb->prefix}workedia_messages
+             FROM {$wpdb->prefix}dashboard_messages
              WHERE sender_id = %d OR receiver_id = %d",
             $user_id, $user_id, $user_id
         ));
@@ -328,7 +328,7 @@ class Workedia_DB {
         $conversations = [];
         foreach ($other_ids as $oid) {
             $last_msg = $wpdb->get_row($wpdb->prepare(
-                "SELECT * FROM {$wpdb->prefix}workedia_messages
+                "SELECT * FROM {$wpdb->prefix}dashboard_messages
                  WHERE (sender_id = %d AND receiver_id = %d) OR (sender_id = %d AND receiver_id = %d)
                  ORDER BY created_at DESC LIMIT 1",
                 $user_id, $oid, $oid, $user_id
@@ -347,17 +347,17 @@ class Workedia_DB {
 
     public static function get_all_conversations() {
         global $wpdb;
-        $ticket_members = $wpdb->get_col("SELECT DISTINCT member_id FROM {$wpdb->prefix}workedia_messages WHERE member_id IS NOT NULL");
+        $ticket_members = $wpdb->get_col("SELECT DISTINCT member_id FROM {$wpdb->prefix}dashboard_messages WHERE member_id IS NOT NULL");
         $results = [];
         foreach ($ticket_members as $mid) {
             $member = self::get_member_by_id($mid);
             if (!$member) continue;
             $last_msg = $wpdb->get_row($wpdb->prepare(
-                "SELECT * FROM {$wpdb->prefix}workedia_messages WHERE member_id = %d ORDER BY created_at DESC LIMIT 1",
+                "SELECT * FROM {$wpdb->prefix}dashboard_messages WHERE member_id = %d ORDER BY created_at DESC LIMIT 1",
                 $mid
             ));
             $unread = $wpdb->get_var($wpdb->prepare(
-                "SELECT COUNT(*) FROM {$wpdb->prefix}workedia_messages WHERE member_id = %d AND is_read = 0",
+                "SELECT COUNT(*) FROM {$wpdb->prefix}dashboard_messages WHERE member_id = %d AND is_read = 0",
                 $mid
             ));
             $results[] = [
@@ -373,7 +373,7 @@ class Workedia_DB {
         global $wpdb;
         $stats = array();
 
-        $stats['total_members'] = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}workedia_members");
+        $stats['total_members'] = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}dashboard_members");
         $stats['total_officers'] = count(self::get_staff(['number' => -1]));
 
         return $stats;
@@ -385,10 +385,10 @@ class Workedia_DB {
 
     public static function delete_all_data() {
         global $wpdb;
-        $wpdb->query("TRUNCATE TABLE {$wpdb->prefix}workedia_members");
-        $wpdb->query("TRUNCATE TABLE {$wpdb->prefix}workedia_messages");
-        $wpdb->query("TRUNCATE TABLE {$wpdb->prefix}workedia_logs");
-        Workedia_Logger::log('مسح شامل للبيانات', 'تم تنفيذ أمر مسح كافة بيانات النظام');
+        $wpdb->query("TRUNCATE TABLE {$wpdb->prefix}dashboard_members");
+        $wpdb->query("TRUNCATE TABLE {$wpdb->prefix}dashboard_messages");
+        $wpdb->query("TRUNCATE TABLE {$wpdb->prefix}dashboard_logs");
+        Dashboard_Logger::log('مسح شامل للبيانات', 'تم تنفيذ أمر مسح كافة بيانات النظام');
     }
 
     public static function get_backup_data() {
@@ -396,7 +396,7 @@ class Workedia_DB {
         $data = array();
         $tables = array('members', 'messages');
         foreach ($tables as $t) {
-            $data[$t] = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}workedia_$t", ARRAY_A);
+            $data[$t] = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}dashboard_$t", ARRAY_A);
         }
         return json_encode($data);
     }
@@ -407,7 +407,7 @@ class Workedia_DB {
         if (!$data) return false;
 
         foreach ($data as $table => $rows) {
-            $table_name = $wpdb->prefix . 'workedia_' . $table;
+            $table_name = $wpdb->prefix . 'dashboard_' . $table;
             $wpdb->query("TRUNCATE TABLE $table_name");
             foreach ($rows as $row) {
                 $wpdb->insert($table_name, $row);
@@ -422,7 +422,7 @@ class Workedia_DB {
     // Ticketing System Methods
     public static function create_ticket($data) {
         global $wpdb;
-        $res = $wpdb->insert("{$wpdb->prefix}workedia_tickets", array(
+        $res = $wpdb->insert("{$wpdb->prefix}dashboard_tickets", array(
             'member_id' => intval($data['member_id']),
             'subject' => sanitize_text_field($data['subject']),
             'category' => sanitize_text_field($data['category']),
@@ -447,7 +447,7 @@ class Workedia_DB {
 
     public static function add_ticket_reply($data) {
         global $wpdb;
-        $res = $wpdb->insert("{$wpdb->prefix}workedia_ticket_thread", array(
+        $res = $wpdb->insert("{$wpdb->prefix}dashboard_ticket_thread", array(
             'ticket_id' => intval($data['ticket_id']),
             'sender_id' => intval($data['sender_id']),
             'message' => sanitize_textarea_field($data['message']),
@@ -455,7 +455,7 @@ class Workedia_DB {
             'created_at' => current_time('mysql')
         ));
         if ($res) {
-            $wpdb->update("{$wpdb->prefix}workedia_tickets", array('updated_at' => current_time('mysql')), array('id' => intval($data['ticket_id'])));
+            $wpdb->update("{$wpdb->prefix}dashboard_tickets", array('updated_at' => current_time('mysql')), array('id' => intval($data['ticket_id'])));
             return $wpdb->insert_id;
         }
         return false;
@@ -471,7 +471,7 @@ class Workedia_DB {
 
         if ($is_member) {
             // Find member_id from wp_user_id
-            $member_id = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$wpdb->prefix}workedia_members WHERE wp_user_id = %d", $user->ID));
+            $member_id = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$wpdb->prefix}dashboard_members WHERE wp_user_id = %d", $user->ID));
             $where .= " AND t.member_id = %d";
             $params[] = intval($member_id);
         }
@@ -499,8 +499,8 @@ class Workedia_DB {
         }
 
         $query = "SELECT t.*, CONCAT(m.first_name, ' ', m.last_name) as member_name, m.photo_url as member_photo
-                  FROM {$wpdb->prefix}workedia_tickets t
-                  JOIN {$wpdb->prefix}workedia_members m ON t.member_id = m.id
+                  FROM {$wpdb->prefix}dashboard_tickets t
+                  JOIN {$wpdb->prefix}dashboard_members m ON t.member_id = m.id
                   WHERE $where
                   ORDER BY t.updated_at DESC";
 
@@ -514,8 +514,8 @@ class Workedia_DB {
         global $wpdb;
         return $wpdb->get_row($wpdb->prepare(
             "SELECT t.*, CONCAT(m.first_name, ' ', m.last_name) as member_name, m.phone as member_phone
-             FROM {$wpdb->prefix}workedia_tickets t
-             JOIN {$wpdb->prefix}workedia_members m ON t.member_id = m.id
+             FROM {$wpdb->prefix}dashboard_tickets t
+             JOIN {$wpdb->prefix}dashboard_members m ON t.member_id = m.id
              WHERE t.id = %d",
             $id
         ));
@@ -525,7 +525,7 @@ class Workedia_DB {
         global $wpdb;
         return $wpdb->get_results($wpdb->prepare(
             "SELECT tr.*, u.display_name as sender_name
-             FROM {$wpdb->prefix}workedia_ticket_thread tr
+             FROM {$wpdb->prefix}dashboard_ticket_thread tr
              LEFT JOIN {$wpdb->base_prefix}users u ON tr.sender_id = u.ID
              WHERE tr.ticket_id = %d
              ORDER BY tr.created_at ASC",
@@ -535,23 +535,23 @@ class Workedia_DB {
 
     public static function update_ticket_status($id, $status) {
         global $wpdb;
-        return $wpdb->update("{$wpdb->prefix}workedia_tickets", array('status' => $status), array('id' => $id));
+        return $wpdb->update("{$wpdb->prefix}dashboard_tickets", array('status' => $status), array('id' => $id));
     }
 
     // Page Customization Methods
     public static function get_pages() {
         global $wpdb;
-        return $wpdb->get_results("SELECT * FROM {$wpdb->prefix}workedia_pages ORDER BY id ASC");
+        return $wpdb->get_results("SELECT * FROM {$wpdb->prefix}dashboard_pages ORDER BY id ASC");
     }
 
     public static function get_page_by_shortcode($shortcode) {
         global $wpdb;
-        return $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}workedia_pages WHERE shortcode = %s", $shortcode));
+        return $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}dashboard_pages WHERE shortcode = %s", $shortcode));
     }
 
     public static function update_page($id, $data) {
         global $wpdb;
-        return $wpdb->update("{$wpdb->prefix}workedia_pages", [
+        return $wpdb->update("{$wpdb->prefix}dashboard_pages", [
             'title' => sanitize_text_field($data['title']),
             'instructions' => sanitize_textarea_field($data['instructions']),
             'settings' => $data['settings']
@@ -561,7 +561,7 @@ class Workedia_DB {
     // Article Management Methods
     public static function add_article($data) {
         global $wpdb;
-        return $wpdb->insert("{$wpdb->prefix}workedia_articles", [
+        return $wpdb->insert("{$wpdb->prefix}dashboard_articles", [
             'title' => sanitize_text_field($data['title']),
             'content' => wp_kses_post($data['content']),
             'image_url' => esc_url_raw($data['image_url'] ?? ''),
@@ -573,18 +573,18 @@ class Workedia_DB {
 
     public static function get_articles($limit = 10) {
         global $wpdb;
-        return $wpdb->get_results($wpdb->prepare("SELECT * FROM {$wpdb->prefix}workedia_articles WHERE status = 'publish' ORDER BY created_at DESC LIMIT %d", $limit));
+        return $wpdb->get_results($wpdb->prepare("SELECT * FROM {$wpdb->prefix}dashboard_articles WHERE status = 'publish' ORDER BY created_at DESC LIMIT %d", $limit));
     }
 
     public static function delete_article($id) {
         global $wpdb;
-        return $wpdb->delete("{$wpdb->prefix}workedia_articles", ['id' => intval($id)]);
+        return $wpdb->delete("{$wpdb->prefix}dashboard_articles", ['id' => intval($id)]);
     }
 
     // Global Alert System Methods
     public static function save_alert($data) {
         global $wpdb;
-        $table = $wpdb->prefix . 'workedia_alerts';
+        $table = $wpdb->prefix . 'dashboard_alerts';
         $insert_data = [
             'title' => sanitize_text_field($data['title']),
             'message' => wp_kses_post($data['message']),
@@ -605,18 +605,18 @@ class Workedia_DB {
         if (!empty($args['status'])) {
             $where .= $wpdb->prepare(" AND status = %s", $args['status']);
         }
-        return $wpdb->get_results("SELECT * FROM {$wpdb->prefix}workedia_alerts WHERE $where ORDER BY created_at DESC");
+        return $wpdb->get_results("SELECT * FROM {$wpdb->prefix}dashboard_alerts WHERE $where ORDER BY created_at DESC");
     }
 
     public static function get_alert($id) {
         global $wpdb;
-        return $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}workedia_alerts WHERE id = %d", $id));
+        return $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}dashboard_alerts WHERE id = %d", $id));
     }
 
     public static function delete_alert($id) {
         global $wpdb;
-        $wpdb->delete("{$wpdb->prefix}workedia_alert_views", ['alert_id' => intval($id)]);
-        return $wpdb->delete("{$wpdb->prefix}workedia_alerts", ['id' => intval($id)]);
+        $wpdb->delete("{$wpdb->prefix}dashboard_alert_views", ['alert_id' => intval($id)]);
+        return $wpdb->delete("{$wpdb->prefix}dashboard_alerts", ['id' => intval($id)]);
     }
 
     public static function get_active_alerts_for_user($user_id) {
@@ -628,8 +628,8 @@ class Workedia_DB {
 
         return $wpdb->get_results($wpdb->prepare("
             SELECT a.*
-            FROM {$wpdb->prefix}workedia_alerts a
-            LEFT JOIN {$wpdb->prefix}workedia_alert_views v ON a.id = v.alert_id AND v.user_id = %d
+            FROM {$wpdb->prefix}dashboard_alerts a
+            LEFT JOIN {$wpdb->prefix}dashboard_alert_views v ON a.id = v.alert_id AND v.user_id = %d
             WHERE a.status = 'active'
             AND v.id IS NULL
         ", $user_id));
@@ -637,7 +637,7 @@ class Workedia_DB {
 
     public static function acknowledge_alert($alert_id, $user_id) {
         global $wpdb;
-        return $wpdb->insert("{$wpdb->prefix}workedia_alert_views", [
+        return $wpdb->insert("{$wpdb->prefix}dashboard_alert_views", [
             'alert_id' => intval($alert_id),
             'user_id' => intval($user_id),
             'acknowledged' => 1,
