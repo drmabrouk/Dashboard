@@ -573,6 +573,6 @@ class Dashboard_Activator {
         }
 
         // User Meta migration
-        $wpdb->query("UPDATE {$wpdb->prefix}usermeta SET meta_key = REPLACE(meta_key, 'workedia_', 'dashboard_') WHERE meta_key LIKE 'workedia_%'");
+        $wpdb->query("UPDATE {$wpdb->prefix}usermeta SET meta_key = REPLACE(meta_key, 'workedia', 'dashboard') WHERE meta_key LIKE 'workedia%'");
     }
 }

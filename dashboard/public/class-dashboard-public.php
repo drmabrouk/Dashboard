@@ -69,13 +69,22 @@ class Dashboard_Public {
                 --dashboard-secondary-color: {$appearance['secondary_color']};
                 --dashboard-accent-color: {$appearance['accent_color']};
                 --dashboard-dark-color: {$appearance['dark_color']};
+                --dashboard-bg-color: {$appearance['bg_color']};
+                --dashboard-sidebar-bg-color: {$appearance['sidebar_bg_color']};
+                --dashboard-font-color: {$appearance['font_color']};
+                --dashboard-border-color: {$appearance['border_color']};
+                --dashboard-btn-color: {$appearance['btn_color']};
                 --dashboard-radius: {$appearance['border_radius']};
             }
             .dashboard-content-wrapper, .dashboard-admin-dashboard, .dashboard-container,
             .dashboard-content-wrapper *:not(.dashicons), .dashboard-admin-dashboard *:not(.dashicons), .dashboard-container *:not(.dashicons) {
                 font-family: 'Rubik', sans-serif !important;
             }
-            .dashboard-admin-dashboard { font-size: {$appearance['font_size']}; }
+            .dashboard-admin-dashboard {
+                font-size: {$appearance['font_size']};
+                font-weight: {$appearance['font_weight']};
+                line-height: {$appearance['line_spacing']};
+            }
         ";
         wp_add_inline_style($this->plugin_name, $custom_css);
     }
@@ -1046,7 +1055,7 @@ class Dashboard_Public {
             // Re-create WP User if it was deleted
             if ($wp_user_id && !get_userdata($wp_user_id)) {
                 $digits = ''; for ($i = 0; $i < 10; $i++) $digits .= mt_rand(0, 9);
-                $temp_pass = 'WORKEDIA' . $digits;
+                $temp_pass = 'DASHBOARD' . $digits;
                 $wp_user_id = wp_insert_user([
                     'user_login' => $data['username'],
                     'user_email' => $data['email'] ?: $data['username'] . '@irseg.org',

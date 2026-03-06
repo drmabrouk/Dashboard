@@ -55,9 +55,10 @@ class Dashboard_Admin {
     }
 
     public function enqueue_styles() {
+        wp_enqueue_style('dashicons');
         wp_enqueue_style('google-font-rubik', 'https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700;800;900&display=swap', array(), null);
         wp_add_inline_script('jquery', 'var ajaxurl = "' . admin_url('admin-ajax.php') . '";', 'before');
-        wp_enqueue_style($this->plugin_name, DASHBOARD_PLUGIN_URL . 'assets/css/dashboard-admin.css', array(), $this->version, 'all');
+        wp_enqueue_style($this->plugin_name, DASHBOARD_PLUGIN_URL . 'assets/css/dashboard-admin.css', array('dashicons'), $this->version, 'all');
 
         $appearance = Dashboard_Settings::get_appearance();
         $custom_css = "
@@ -66,13 +67,22 @@ class Dashboard_Admin {
                 --dashboard-secondary-color: {$appearance['secondary_color']};
                 --dashboard-accent-color: {$appearance['accent_color']};
                 --dashboard-dark-color: {$appearance['dark_color']};
+                --dashboard-bg-color: {$appearance['bg_color']};
+                --dashboard-sidebar-bg-color: {$appearance['sidebar_bg_color']};
+                --dashboard-font-color: {$appearance['font_color']};
+                --dashboard-border-color: {$appearance['border_color']};
+                --dashboard-btn-color: {$appearance['btn_color']};
                 --dashboard-radius: {$appearance['border_radius']};
             }
             .dashboard-content-wrapper, .dashboard-admin-dashboard, .dashboard-container,
             .dashboard-content-wrapper *:not(.dashicons), .dashboard-admin-dashboard *:not(.dashicons), .dashboard-container *:not(.dashicons) {
                 font-family: 'Rubik', sans-serif !important;
             }
-            .dashboard-content-wrapper { font-size: {$appearance['font_size']}; }
+            .dashboard-content-wrapper, .dashboard-admin-dashboard {
+                font-size: {$appearance['font_size']};
+                font-weight: {$appearance['font_weight']};
+                line-height: {$appearance['line_spacing']};
+            }
         ";
         wp_add_inline_style($this->plugin_name, $custom_css);
     }
@@ -124,7 +134,14 @@ class Dashboard_Admin {
                 'secondary_color' => sanitize_hex_color($_POST['secondary_color']),
                 'accent_color' => sanitize_hex_color($_POST['accent_color']),
                 'dark_color' => sanitize_hex_color($_POST['dark_color']),
+                'bg_color' => sanitize_hex_color($_POST['bg_color']),
+                'sidebar_bg_color' => sanitize_hex_color($_POST['sidebar_bg_color']),
+                'font_color' => sanitize_hex_color($_POST['font_color']),
+                'border_color' => sanitize_hex_color($_POST['border_color']),
+                'btn_color' => sanitize_hex_color($_POST['btn_color']),
                 'font_size' => sanitize_text_field($_POST['font_size']),
+                'font_weight' => sanitize_text_field($_POST['font_weight']),
+                'line_spacing' => sanitize_text_field($_POST['line_spacing']),
                 'border_radius' => sanitize_text_field($_POST['border_radius']),
                 'table_style' => sanitize_text_field($_POST['table_style']),
                 'button_style' => sanitize_text_field($_POST['button_style'])
