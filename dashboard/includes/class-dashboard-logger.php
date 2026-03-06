@@ -1,12 +1,12 @@
 <?php
 
-class Workedia_Logger {
+class Dashboard_Logger {
     public static function log($action, $details = '') {
         global $wpdb;
         $user_id = get_current_user_id();
 
         $wpdb->insert(
-            "{$wpdb->prefix}workedia_logs",
+            "{$wpdb->prefix}dashboard_logs",
             array(
                 'user_id' => $user_id,
                 'action' => sanitize_text_field($action),
@@ -16,10 +16,10 @@ class Workedia_Logger {
         );
 
         // Limit to 200 entries
-        $count = (int)$wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}workedia_logs");
+        $count = (int)$wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}dashboard_logs");
         if ($count > 200) {
             $limit = $count - 200;
-            $wpdb->query($wpdb->prepare("DELETE FROM {$wpdb->prefix}workedia_logs ORDER BY created_at ASC LIMIT %d", $limit));
+            $wpdb->query($wpdb->prepare("DELETE FROM {$wpdb->prefix}dashboard_logs ORDER BY created_at ASC LIMIT %d", $limit));
         }
     }
 
@@ -34,7 +34,7 @@ class Workedia_Logger {
         }
 
         return $wpdb->get_results($wpdb->prepare(
-            "SELECT l.*, u.display_name FROM {$wpdb->prefix}workedia_logs l LEFT JOIN {$wpdb->base_prefix}users u ON l.user_id = u.ID WHERE $where ORDER BY l.created_at DESC LIMIT %d OFFSET %d",
+            "SELECT l.*, u.display_name FROM {$wpdb->prefix}dashboard_logs l LEFT JOIN {$wpdb->base_prefix}users u ON l.user_id = u.ID WHERE $where ORDER BY l.created_at DESC LIMIT %d OFFSET %d",
             $limit,
             $offset
         ));
@@ -50,6 +50,6 @@ class Workedia_Logger {
             $where .= $wpdb->prepare(" AND (l.action LIKE %s OR l.details LIKE %s OR EXISTS (SELECT 1 FROM {$wpdb->base_prefix}users u WHERE u.ID = l.user_id AND u.display_name LIKE %s) OR l.created_at LIKE %s)", $s, $s, $s, $s);
         }
 
-        return (int)$wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}workedia_logs l WHERE $where");
+        return (int)$wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}dashboard_logs l WHERE $where");
     }
 }

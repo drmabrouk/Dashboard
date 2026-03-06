@@ -1,5 +1,5 @@
 <?php if (!defined('ABSPATH')) exit;
-$workedia = Workedia_Settings::get_workedia_info();
+$dashboard = Dashboard_Settings::get_dashboard_info();
 ?>
 <!DOCTYPE html>
 <html dir="rtl" lang="ar">
@@ -10,7 +10,7 @@ $workedia = Workedia_Settings::get_workedia_info();
         @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700;900&display=swap');
         body { font-family: 'Rubik', sans-serif; margin: 0; padding: 20px; background: #fff; }
         .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #111F35; padding-bottom: 20px; }
-        .workedia-name { font-size: 24px; font-weight: 900; color: #111F35; }
+        .dashboard-name { font-size: 24px; font-weight: 900; color: #111F35; }
         .report-title { font-size: 18px; color: #F63049; margin-top: 10px; font-weight: 700; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th { background: #111F35; color: #fff; padding: 12px; text-align: right; font-size: 14px; }
@@ -26,7 +26,7 @@ $workedia = Workedia_Settings::get_workedia_info();
 </head>
 <body>
     <div class="header">
-        <div class="workedia-name"><?php echo esc_html($workedia['workedia_name']); ?></div>
+        <div class="dashboard-name"><?php echo esc_html($dashboard['dashboard_name']); ?></div>
         <div class="report-title">كشف بيانات دخول الأعضاء (ولي الأمر / العضو)</div>
         <div style="font-size: 12px; margin-top: 5px;">تاريخ التوليد: <?php echo date_i18n('j F Y'); ?></div>
     </div>
@@ -44,7 +44,7 @@ $workedia = Workedia_Settings::get_workedia_info();
             <?php
             $count = 1;
             foreach ($members as $s):
-                $pass = get_user_meta($s->wp_user_id, 'workedia_temp_pass', true);
+                $pass = get_user_meta($s->wp_user_id, 'dashboard_temp_pass', true);
                 if (empty($pass)) $pass = '********';
             ?>
                 <tr>
