@@ -1,11 +1,11 @@
 <?php
 
-class Workedia_Notifications {
+class Dashboard_Notifications {
 
     public static function get_template($type) {
         global $wpdb;
         return $wpdb->get_row($wpdb->prepare(
-            "SELECT * FROM {$wpdb->prefix}workedia_notification_templates WHERE template_type = %s",
+            "SELECT * FROM {$wpdb->prefix}dashboard_notification_templates WHERE template_type = %s",
             $type
         ));
     }
@@ -13,7 +13,7 @@ class Workedia_Notifications {
     public static function save_template($data) {
         global $wpdb;
         return $wpdb->replace(
-            "{$wpdb->prefix}workedia_notification_templates",
+            "{$wpdb->prefix}dashboard_notification_templates",
             array(
                 'template_type' => sanitize_text_field($data['template_type']),
                 'subject' => sanitize_text_field($data['subject']),
@@ -28,7 +28,7 @@ class Workedia_Notifications {
         $template = self::get_template($type);
         if (!$template || !$template->is_enabled) return false;
 
-        $member = Workedia_DB::get_member_by_id($member_id);
+        $member = Dashboard_DB::get_member_by_id($member_id);
         if (!$member || empty($member->email)) return false;
 
         $subject = $template->subject;
@@ -46,20 +46,20 @@ class Workedia_Notifications {
             $body = str_replace($search, $replace, $body);
         }
 
-        $email_settings = get_option('workedia_email_design_settings', [
+        $email_settings = get_option('dashboard_email_design_settings', [
             'header_bg' => '#111F35',
             'header_text' => '#ffffff',
             'footer_text' => '#64748b',
             'accent_color' => '#F63049'
         ]);
 
-        $workedia = Workedia_Settings::get_workedia_info();
+        $dashboard = Dashboard_Settings::get_dashboard_info();
 
-        $html_message = self::wrap_in_template($subject, $body, $email_settings, $workedia);
+        $html_message = self::wrap_in_template($subject, $body, $email_settings, $dashboard);
 
         // Professional Sender info
         add_filter('wp_mail_from', function() { return 'no-reply@irseg.org'; });
-        add_filter('wp_mail_from_name', function() use ($workedia) { return $workedia['workedia_name']; });
+        add_filter('wp_mail_from_name', function() use ($dashboard) { return $dashboard['dashboard_name']; });
 
         $headers = array('Content-Type: text/html; charset=UTF-8');
         $sent = wp_mail($member->email, $subject, $html_message, $headers);
@@ -69,8 +69,8 @@ class Workedia_Notifications {
         return $sent;
     }
 
-    private static function wrap_in_template($subject, $body, $design, $workedia) {
-        $logo_html = !empty($workedia['workedia_logo']) ? '<img src="'.esc_url($workedia['workedia_logo']).'" style="max-height:80px; margin-bottom:15px; display:inline-block;">' : '';
+    private static function wrap_in_template($subject, $body, $design, $dashboard) {
+        $logo_html = !empty($dashboard['dashboard_logo']) ? '<img src="'.esc_url($dashboard['dashboard_logo']).'" style="max-height:80px; margin-bottom:15px; display:inline-block;">' : '';
 
         ob_start();
         ?>
@@ -91,7 +91,7 @@ class Workedia_Notifications {
             <div class="email-container">
                 <div class="header">
                     <?php echo $logo_html; ?>
-                    <h1 style="margin: 0; font-size: 22px; font-weight: 800;"><?php echo esc_html($workedia['workedia_name']); ?></h1>
+                    <h1 style="margin: 0; font-size: 22px; font-weight: 800;"><?php echo esc_html($dashboard['dashboard_name']); ?></h1>
                 </div>
                 <div class="content">
                     <h2 style="color: <?php echo $design['accent_color']; ?>; margin-top: 0;"><?php echo esc_html($subject); ?></h2>
@@ -100,9 +100,9 @@ class Workedia_Notifications {
                     </div>
                 </div>
                 <div class="footer">
-                    <p style="margin: 0 0 10px 0; font-weight: 700;"><?php echo esc_html($workedia['workedia_name']); ?></p>
-                    <p style="margin: 5px 0;"><?php echo esc_html($workedia['address']); ?></p>
-                    <p style="margin: 5px 0;">هاتف: <?php echo esc_html($workedia['phone']); ?> | بريد: <?php echo esc_html($workedia['email']); ?></p>
+                    <p style="margin: 0 0 10px 0; font-weight: 700;"><?php echo esc_html($dashboard['dashboard_name']); ?></p>
+                    <p style="margin: 5px 0;"><?php echo esc_html($dashboard['address']); ?></p>
+                    <p style="margin: 5px 0;">هاتف: <?php echo esc_html($dashboard['phone']); ?> | بريد: <?php echo esc_html($dashboard['email']); ?></p>
                     <p style="margin: 15px 0 0 0; opacity: 0.8;">هذه رسالة تلقائية، يرجى عدم الرد عليها مباشرة.</p>
                 </div>
             </div>
@@ -114,7 +114,7 @@ class Workedia_Notifications {
 
     private static function log_notification($member_id, $type, $email, $subject, $status) {
         global $wpdb;
-        $wpdb->insert("{$wpdb->prefix}workedia_notification_logs", [
+        $wpdb->insert("{$wpdb->prefix}dashboard_notification_logs", [
             'member_id' => $member_id,
             'notification_type' => $type,
             'recipient_email' => $email,
@@ -137,7 +137,7 @@ class Workedia_Notifications {
         $target_date = date('Y-m-d', strtotime("+$days days"));
 
         $members = $wpdb->get_results($wpdb->prepare(
-            "SELECT id, membership_expiration_date as expiry FROM {$wpdb->prefix}workedia_members WHERE membership_expiration_date = %s",
+            "SELECT id, membership_expiration_date as expiry FROM {$wpdb->prefix}dashboard_members WHERE membership_expiration_date = %s",
             $target_date
         ));
 
@@ -151,7 +151,7 @@ class Workedia_Notifications {
     private static function already_notified($member_id, $type, $days_limit) {
         global $wpdb;
         $last_sent = $wpdb->get_var($wpdb->prepare(
-            "SELECT sent_at FROM {$wpdb->prefix}workedia_notification_logs WHERE member_id = %d AND notification_type = %s ORDER BY sent_at DESC LIMIT 1",
+            "SELECT sent_at FROM {$wpdb->prefix}dashboard_notification_logs WHERE member_id = %d AND notification_type = %s ORDER BY sent_at DESC LIMIT 1",
             $member_id, $type
         ));
         if (!$last_sent) return false;
@@ -162,8 +162,8 @@ class Workedia_Notifications {
         global $wpdb;
         return $wpdb->get_results($wpdb->prepare(
             "SELECT l.*, m.name as member_name
-             FROM {$wpdb->prefix}workedia_notification_logs l
-             LEFT JOIN {$wpdb->prefix}workedia_members m ON l.member_id = m.id
+             FROM {$wpdb->prefix}dashboard_notification_logs l
+             LEFT JOIN {$wpdb->prefix}dashboard_members m ON l.member_id = m.id
              ORDER BY l.sent_at DESC LIMIT %d OFFSET %d",
             $limit, $offset
         ));

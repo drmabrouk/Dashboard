@@ -1,6 +1,6 @@
 <?php
 
-class Workedia_Loader {
+class Dashboard_Loader {
     protected $actions;
     protected $filters;
 
