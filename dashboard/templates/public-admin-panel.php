@@ -1,7 +1,7 @@
 <?php if (!defined('ABSPATH')) exit; ?>
 <script>
 /**
- * WORKEDIA - CORE UI ENGINE (ULTRA HARDENED V5)
+ * DASHBOARD - CORE UI ENGINE (ULTRA HARDENED V5)
  * Standard linking and routing fix.
  */
 (function(window) {
@@ -379,8 +379,8 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
 
 <div class="dashboard-admin-dashboard" dir="rtl" style="font-family: 'Rubik', sans-serif; background: <?php echo $appearance['bg_color']; ?>; border: 1px solid var(--dashboard-border-color); border-radius: 12px; overflow: hidden; color: <?php echo $appearance['font_color']; ?>; font-size: <?php echo $appearance['font_size']; ?>; font-weight: <?php echo $appearance['font_weight']; ?>; line-height: <?php echo $appearance['line_spacing']; ?>;">
     <!-- OFFICIAL SYSTEM HEADER -->
-    <div class="dashboard-main-header">
-        <div style="display: flex; align-items: center; gap: 20px;">
+    <div class="dashboard-main-header" style="flex-wrap: wrap; gap: 20px;">
+        <div style="display: flex; align-items: center; gap: 20px; flex: 1; min-width: 300px;">
             <?php if (!empty($dashboard['dashboard_logo'])): ?>
                 <div style="background: white; padding: 5px; border: 1px solid var(--dashboard-border-color); border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
                     <img src="<?php echo esc_url($dashboard['dashboard_logo']); ?>" style="height: 45px; width: auto; object-fit: contain; display: block;">
