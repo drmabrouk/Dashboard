@@ -3,25 +3,25 @@
 global $wpdb;
 
 // Handle Form Submissions
-if (isset($_POST['workedia_save_notification_design'])) {
-    check_admin_referer('workedia_admin_action', 'workedia_admin_nonce');
+if (isset($_POST['dashboard_save_notification_design'])) {
+    check_admin_referer('dashboard_admin_action', 'dashboard_admin_nonce');
     $design = [
         'header_bg' => sanitize_text_field($_POST['header_bg']),
         'header_text' => sanitize_text_field($_POST['header_text']),
         'footer_text' => sanitize_text_field($_POST['footer_text']),
         'accent_color' => sanitize_text_field($_POST['accent_color'])
     ];
-    update_option('workedia_email_design_settings', $design);
-    echo '<div class="workedia-alert workedia-alert-success">تم حفظ إعدادات التصميم بنجاح.</div>';
+    update_option('dashboard_email_design_settings', $design);
+    echo '<div class="dashboard-alert dashboard-alert-success">تم حفظ إعدادات التصميم بنجاح.</div>';
 }
 
-if (isset($_POST['workedia_save_template'])) {
-    check_admin_referer('workedia_admin_action', 'workedia_admin_nonce');
-    Workedia_Notifications::save_template($_POST);
-    echo '<div class="workedia-alert workedia-alert-success">تم تحديث القالب بنجاح.</div>';
+if (isset($_POST['dashboard_save_template'])) {
+    check_admin_referer('dashboard_admin_action', 'dashboard_admin_nonce');
+    Dashboard_Notifications::save_template($_POST);
+    echo '<div class="dashboard-alert dashboard-alert-success">تم تحديث القالب بنجاح.</div>';
 }
 
-$design = get_option('workedia_email_design_settings', [
+$design = get_option('dashboard_email_design_settings', [
     'header_bg' => '#111F35',
     'header_text' => '#ffffff',
     'footer_text' => '#64748b',
@@ -35,23 +35,23 @@ $templates = [
 ];
 ?>
 
-<div class="workedia-notifications-settings" dir="rtl">
+<div class="dashboard-notifications-settings" dir="rtl">
 
-    <div class="workedia-tabs-wrapper" style="display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 2px solid #eee; padding-bottom: 10px;">
-        <button class="workedia-tab-btn workedia-active" onclick="workediaOpenSubTab('email-templates', this)">قوالب البريد</button>
-        <button class="workedia-tab-btn" onclick="workediaOpenSubTab('email-design', this)">تصميم الرسائل</button>
-        <button class="workedia-tab-btn" onclick="workediaOpenSubTab('email-logs', this)">سجل الرسائل المرسلة</button>
+    <div class="dashboard-tabs-wrapper" style="display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 2px solid #eee; padding-bottom: 10px;">
+        <button class="dashboard-tab-btn dashboard-active" onclick="dashboardOpenSubTab('email-templates', this)">قوالب البريد</button>
+        <button class="dashboard-tab-btn" onclick="dashboardOpenSubTab('email-design', this)">تصميم الرسائل</button>
+        <button class="dashboard-tab-btn" onclick="dashboardOpenSubTab('email-logs', this)">سجل الرسائل المرسلة</button>
     </div>
 
     <!-- SubTab: Templates -->
-    <div id="email-templates" class="workedia-sub-tab">
+    <div id="email-templates" class="dashboard-sub-tab">
         <div style="display: grid; grid-template-columns: 300px 1fr; gap: 30px;">
             <div style="background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0;">
                 <h4 style="margin-top:0;">اختر القالب للتعديل:</h4>
                 <ul style="list-style: none; padding: 0; margin: 0;">
                     <?php foreach ($templates as $type => $label): ?>
                         <li style="margin-bottom: 10px;">
-                            <button onclick="workediaLoadTemplate('<?php echo $type; ?>')" class="workedia-btn workedia-btn-outline" style="width: 100%; text-align: right; justify-content: flex-start;">
+                            <button onclick="dashboardLoadTemplate('<?php echo $type; ?>')" class="dashboard-btn dashboard-btn-outline" style="width: 100%; text-align: right; justify-content: flex-start;">
                                 <span class="dashicons dashicons-email-alt" style="margin-left: 10px;"></span> <?php echo $label; ?>
                             </button>
                         </li>
@@ -69,25 +69,25 @@ $templates = [
                 </div>
 
                 <form id="template-editor-form" method="post" style="display: none;">
-                    <?php wp_nonce_field('workedia_admin_action', 'workedia_admin_nonce'); ?>
+                    <?php wp_nonce_field('dashboard_admin_action', 'dashboard_admin_nonce'); ?>
                     <input type="hidden" name="template_type" id="edit_template_type">
 
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 15px;">
-                        <h4 id="edit_template_label" style="margin: 0; color: var(--workedia-primary-color);"></h4>
-                        <label class="workedia-toggle" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                        <h4 id="edit_template_label" style="margin: 0; color: var(--dashboard-primary-color);"></h4>
+                        <label class="dashboard-toggle" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
                             <input type="checkbox" name="is_enabled" id="edit_is_enabled" value="1">
                             <span style="font-size: 13px; font-weight: 700;">تفعيل التنبيه</span>
                         </label>
                     </div>
 
-                    <div class="workedia-form-group">
-                        <label class="workedia-label">عنوان الرسالة (Subject):</label>
-                        <input type="text" name="subject" id="edit_subject" class="workedia-input" required>
+                    <div class="dashboard-form-group">
+                        <label class="dashboard-label">عنوان الرسالة (Subject):</label>
+                        <input type="text" name="subject" id="edit_subject" class="dashboard-input" required>
                     </div>
 
-                    <div class="workedia-form-group">
-                        <label class="workedia-label">نص الرسالة (Body):</label>
-                        <textarea name="body" id="edit_body" class="workedia-textarea" rows="10" required></textarea>
+                    <div class="dashboard-form-group">
+                        <label class="dashboard-label">نص الرسالة (Body):</label>
+                        <textarea name="body" id="edit_body" class="dashboard-textarea" rows="10" required></textarea>
                         <div style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 5px;">
                             <span style="font-size: 11px; color: #666;">الرموز المتاحة: </span>
                             <code style="font-size: 10px; background: #eee; padding: 2px 5px; border-radius: 3px;">{member_name}</code>
@@ -96,14 +96,14 @@ $templates = [
                         </div>
                     </div>
 
-                    <div class="workedia-form-group" style="width: 200px;">
-                        <label class="workedia-label">إرسال قبل (يوم):</label>
-                        <input type="number" name="days_before" id="edit_days_before" class="workedia-input" min="0">
+                    <div class="dashboard-form-group" style="width: 200px;">
+                        <label class="dashboard-label">إرسال قبل (يوم):</label>
+                        <input type="number" name="days_before" id="edit_days_before" class="dashboard-input" min="0">
                         <p style="font-size: 10px; color: #999;">ضع 0 للإرسال الفوري عند الحدث.</p>
                     </div>
 
                     <div style="margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px;">
-                        <button type="submit" name="workedia_save_template" class="workedia-btn" style="width: auto; padding: 12px 40px;">حفظ التغييرات</button>
+                        <button type="submit" name="dashboard_save_template" class="dashboard-btn" style="width: auto; padding: 12px 40px;">حفظ التغييرات</button>
                     </div>
                 </form>
             </div>
@@ -111,45 +111,45 @@ $templates = [
     </div>
 
     <!-- SubTab: Design -->
-    <div id="email-design" class="workedia-sub-tab" style="display: none;">
+    <div id="email-design" class="dashboard-sub-tab" style="display: none;">
         <form method="post" style="max-width: 800px; background: #fff; padding: 30px; border-radius: 12px; border: 1px solid #e2e8f0;">
-            <?php wp_nonce_field('workedia_admin_action', 'workedia_admin_nonce'); ?>
+            <?php wp_nonce_field('dashboard_admin_action', 'dashboard_admin_nonce'); ?>
             <h4 style="margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 25px;">تخصيص مظهر رسائل البريد الإلكتروني</h4>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                <div class="workedia-form-group">
-                    <label class="workedia-label">لون خلفية الهيدر:</label>
-                    <input type="color" name="header_bg" value="<?php echo esc_attr($design['header_bg']); ?>" class="workedia-input" style="height: 45px;">
+                <div class="dashboard-form-group">
+                    <label class="dashboard-label">لون خلفية الهيدر:</label>
+                    <input type="color" name="header_bg" value="<?php echo esc_attr($design['header_bg']); ?>" class="dashboard-input" style="height: 45px;">
                 </div>
-                <div class="workedia-form-group">
-                    <label class="workedia-label">لون نص الهيدر:</label>
-                    <input type="color" name="header_text" value="<?php echo esc_attr($design['header_text']); ?>" class="workedia-input" style="height: 45px;">
+                <div class="dashboard-form-group">
+                    <label class="dashboard-label">لون نص الهيدر:</label>
+                    <input type="color" name="header_text" value="<?php echo esc_attr($design['header_text']); ?>" class="dashboard-input" style="height: 45px;">
                 </div>
-                <div class="workedia-form-group">
-                    <label class="workedia-label">لون الخط المميز (Accent):</label>
-                    <input type="color" name="accent_color" value="<?php echo esc_attr($design['accent_color']); ?>" class="workedia-input" style="height: 45px;">
+                <div class="dashboard-form-group">
+                    <label class="dashboard-label">لون الخط المميز (Accent):</label>
+                    <input type="color" name="accent_color" value="<?php echo esc_attr($design['accent_color']); ?>" class="dashboard-input" style="height: 45px;">
                 </div>
-                <div class="workedia-form-group">
-                    <label class="workedia-label">لون نص الفوتر:</label>
-                    <input type="color" name="footer_text" value="<?php echo esc_attr($design['footer_text']); ?>" class="workedia-input" style="height: 45px;">
+                <div class="dashboard-form-group">
+                    <label class="dashboard-label">لون نص الفوتر:</label>
+                    <input type="color" name="footer_text" value="<?php echo esc_attr($design['footer_text']); ?>" class="dashboard-input" style="height: 45px;">
                 </div>
             </div>
 
             <div style="margin-top: 20px; background: #f1f5f9; padding: 20px; border-radius: 8px;">
                 <p style="font-size: 12px; margin: 0; color: #475569;">
-                    * يتم استخدام شعار Workedia المرفوع في "تهيئة النظام" تلقائياً في أعلى الرسائل.
+                    * يتم استخدام شعار Dashboard المرفوع في "تهيئة النظام" تلقائياً في أعلى الرسائل.
                     <br>* التصميم الحالي يدعم العرض المتجاوب على كافة الأجهزة (Responsive Design).
                 </p>
             </div>
 
-            <button type="submit" name="workedia_save_notification_design" class="workedia-btn" style="width: auto; margin-top: 25px; padding: 12px 40px;">حفظ إعدادات المظهر</button>
+            <button type="submit" name="dashboard_save_notification_design" class="dashboard-btn" style="width: auto; margin-top: 25px; padding: 12px 40px;">حفظ إعدادات المظهر</button>
         </form>
     </div>
 
     <!-- SubTab: Logs -->
-    <div id="email-logs" class="workedia-sub-tab" style="display: none;">
-        <div class="workedia-table-container">
-            <table class="workedia-table">
+    <div id="email-logs" class="dashboard-sub-tab" style="display: none;">
+        <div class="dashboard-table-container">
+            <table class="dashboard-table">
                 <thead>
                     <tr>
                         <th>التاريخ والوقت</th>
@@ -162,7 +162,7 @@ $templates = [
                 </thead>
                 <tbody>
                     <?php
-                    $logs = Workedia_Notifications::get_logs(50);
+                    $logs = Dashboard_Notifications::get_logs(50);
                     if (empty($logs)): ?>
                         <tr><td colspan="6" style="text-align: center; padding: 40px;">لا توجد سجلات بريد مرسلة حالياً.</td></tr>
                     <?php else:
@@ -171,7 +171,7 @@ $templates = [
                                 <td><?php echo $log->sent_at; ?></td>
                                 <td style="font-weight: 700;"><?php echo esc_html($log->member_name ?: '---'); ?></td>
                                 <td><?php echo esc_html($log->recipient_email); ?></td>
-                                <td><span class="workedia-badge workedia-badge-low"><?php echo $templates[$log->notification_type] ?? $log->notification_type; ?></span></td>
+                                <td><span class="dashboard-badge dashboard-badge-low"><?php echo $templates[$log->notification_type] ?? $log->notification_type; ?></span></td>
                                 <td style="font-size: 12px;"><?php echo esc_html($log->subject); ?></td>
                                 <td>
                                     <?php if ($log->status === 'success'): ?>
@@ -191,17 +191,17 @@ $templates = [
 </div>
 
 <script>
-function workediaOpenSubTab(tabId, btn) {
-    document.querySelectorAll('.workedia-sub-tab').forEach(t => t.style.display = 'none');
+function dashboardOpenSubTab(tabId, btn) {
+    document.querySelectorAll('.dashboard-sub-tab').forEach(t => t.style.display = 'none');
     document.getElementById(tabId).style.display = 'block';
-    btn.parentElement.querySelectorAll('.workedia-tab-btn').forEach(b => b.classList.remove('workedia-active'));
-    btn.classList.add('workedia-active');
+    btn.parentElement.querySelectorAll('.dashboard-tab-btn').forEach(b => b.classList.remove('dashboard-active'));
+    btn.classList.add('dashboard-active');
 }
 
-function workediaLoadTemplate(type) {
+function dashboardLoadTemplate(type) {
     const labels = <?php echo json_encode($templates); ?>;
     const formData = new FormData();
-    formData.append('action', 'workedia_get_template_ajax');
+    formData.append('action', 'dashboard_get_template_ajax');
     formData.append('type', type);
 
     fetch(ajaxurl, { method: 'POST', body: formData })

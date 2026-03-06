@@ -1,6 +1,6 @@
 <?php
 
-class Workedia_Settings {
+class Dashboard_Settings {
 
     public static function get_appearance() {
         $default = array(
@@ -20,7 +20,7 @@ class Workedia_Settings {
             'table_style' => 'modern',
             'button_style' => 'flat'
         );
-        return wp_parse_args(get_option('workedia_appearance', array()), $default);
+        return wp_parse_args(get_option('dashboard_appearance', array()), $default);
     }
 
     public static function get_labels() {
@@ -30,73 +30,73 @@ class Workedia_Settings {
             'tab_global_settings' => 'إعدادات النظام',
             'tab_my_profile' => 'ملفي الشخصي'
         );
-        return wp_parse_args(get_option('workedia_labels', array()), $default);
+        return wp_parse_args(get_option('dashboard_labels', array()), $default);
     }
 
     public static function save_labels($labels) {
-        update_option('workedia_labels', $labels);
+        update_option('dashboard_labels', $labels);
     }
 
     public static function save_appearance($data) {
-        update_option('workedia_appearance', $data);
+        update_option('dashboard_appearance', $data);
     }
 
     public static function get_notifications() {
         $default = array(
-            'email_subject' => 'إشعار من Workedia بخصوص العضو: {member_name}',
+            'email_subject' => 'إشعار من Dashboard بخصوص العضو: {member_name}',
             'email_template' => "تحية طيبة، نود إخطاركم بخصوص العضو: {member_name}\nالتفاصيل: {details}",
-            'whatsapp_template' => "تنبيه من Workedia بخصوص العضو {member_name}. تفاصيل: {details}.",
+            'whatsapp_template' => "تنبيه من Dashboard بخصوص العضو {member_name}. تفاصيل: {details}.",
             'internal_template' => "إشعار نظام بخصوص العضو {member_name}."
         );
-        return get_option('workedia_notification_settings', $default);
+        return get_option('dashboard_notification_settings', $default);
     }
 
     public static function save_notifications($data) {
-        update_option('workedia_notification_settings', $data);
+        update_option('dashboard_notification_settings', $data);
     }
 
-    public static function get_workedia_info() {
+    public static function get_dashboard_info() {
         $default = array(
-            'workedia_name' => 'Workedia',
-            'workedia_officer_name' => 'Admin',
-            'workedia_logo' => '',
+            'dashboard_name' => 'Dashboard',
+            'dashboard_officer_name' => 'Admin',
+            'dashboard_logo' => '',
             'address' => 'Cairo, Egypt',
-            'email' => 'info@workedia.com',
+            'email' => 'info@dashboard.com',
             'phone' => '0123456789',
             'website_url' => '',
             'map_link' => '',
             'extra_details' => ''
         );
-        return get_option('workedia_info', $default);
+        return get_option('dashboard_info', $default);
     }
 
-    public static function save_workedia_info($data) {
-        update_option('workedia_info', $data);
+    public static function save_dashboard_info($data) {
+        update_option('dashboard_info', $data);
     }
 
     public static function get_retention_settings() {
         $default = array(
             'message_retention_days' => 90
         );
-        return get_option('workedia_retention_settings', $default);
+        return get_option('dashboard_retention_settings', $default);
     }
 
     public static function save_retention_settings($data) {
-        update_option('workedia_retention_settings', $data);
+        update_option('dashboard_retention_settings', $data);
     }
 
     public static function record_backup_download() {
-        update_option('workedia_last_backup_download', current_time('mysql'));
+        update_option('dashboard_last_backup_download', current_time('mysql'));
     }
 
     public static function record_backup_import() {
-        update_option('workedia_last_backup_import', current_time('mysql'));
+        update_option('dashboard_last_backup_import', current_time('mysql'));
     }
 
     public static function get_last_backup_info() {
         return array(
-            'export' => get_option('workedia_last_backup_download', 'لم يتم التصدير مسبقاً'),
-            'import' => get_option('workedia_last_backup_import', 'لم يتم الاستيراد مسبقاً')
+            'export' => get_option('dashboard_last_backup_download', 'لم يتم التصدير مسبقاً'),
+            'import' => get_option('dashboard_last_backup_import', 'لم يتم الاستيراد مسبقاً')
         );
     }
 
